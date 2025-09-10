@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Lesson: Half-Life</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The application is structured as a single-page, vertical scrolling lesson. It moves from basic concepts (atoms, radioactivity) to the core idea of half-life, demonstrated with an interactive popcorn analogy. The centerpiece is a dynamic "Half-Life Simulator" with a Chart.js graph, allowing users to input variables and see the results, replacing static problems with active exploration. This is followed by a real-world application (Carbon-14) and an interactive quiz for knowledge assessment. This flow was chosen over a simple slide presentation to foster active learning and deeper understanding through hands-on interaction, which is more effective for the target M.1 student audience. -->
+    <!-- Visualization & Content Choices: 1. Popcorn Analogy: Goal=Introduce half-life concept intuitively. Method=HTML/CSS elements updated via JS button clicks. Justification=Visual, step-by-step analogy is easier for students than an abstract definition. 2. Half-Life Graph: Goal=Visualize exponential decay dynamically. Method=Interactive Line Chart. Interaction=User inputs initial amount/half-life/time; JS calculates results and updates chart. Justification=Allows exploration of "what-if" scenarios, making the mathematical relationship tangible. Library=Chart.js (Canvas). 3. Quiz Problems: Goal=Assess understanding. Method=Interactive input fields with JS answer-checking. Justification=Provides immediate feedback, reinforcing learning better than static solutions. CONFIRMED: No SVG or Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FEFBF6; /* Warm cream background */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #F3EAD8;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        .btn-primary {
+            background-color: #0077B6; /* Calming Blue */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #023E8A;
+        }
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <header class="text-center py-12 px-4 bg-white shadow-sm">
+        <h1 class="text-4xl md:text-5xl font-bold text-sky-800">Understanding "Half-Life"</h1>
+        <p class="text-lg text-stone-600 mt-2">The Story of Radioactive Atoms</p>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-4 md:p-8 space-y-16">
+
+        <section id="mission" class="card text-center">
+            <h2 class="text-2xl font-bold text-sky-700 mb-4">Our Mission Today!</h2>
+            <p class="text-stone-600">Our goal is to understand 3 simple things:</p>
+            <ul class="list-none mt-4 space-y-2 text-left inline-block">
+                <li class="flex items-center"><span class="text-xl text-amber-500 mr-3">1️⃣</span> What are radioactive atoms?</li>
+                <li class="flex items-center"><span class="text-xl text-amber-500 mr-3">2️⃣</span> What is "Half-Life"?</li>
+                <li class="flex items-center"><span class="text-xl text-amber-500 mr-3">3️⃣</span> How can we use half-life?</li>
+            </ul>
+        </section>
+
+        <section id="basics" class="card">
+            <h2 class="text-2xl font-bold text-sky-700 mb-4 text-center">The Basics: Atoms and Radioactivity</h2>
+            <p class="text-center text-stone-600 mb-6">Before we continue, let's review what an atom is and why some atoms are unstable and emit radiation.</p>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="p-6 bg-amber-50 rounded-lg border border-amber-200">
+                    <h3 class="text-xl font-semibold mb-2">Atom ⚛️</h3>
+                    <p>Everything is made of atoms! Imagine an atom is like a tiny solar system. At the center is the <strong>Nucleus</strong> (like the sun), and orbiting around it are <strong>Electrons</strong> (like planets).</p>
+                </div>
+                <div class="p-6 bg-sky-50 rounded-lg border border-sky-200">
+                    <h3 class="text-xl font-semibold mb-2">Unstable Atoms = Radioactive! ☢️</h3>
+                    <p>Some atoms have an "unstable" nucleus because they have too much energy. To become stable, these atoms release energy in the form of radiation. This process is called <strong>Radioactive Decay</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="half-life-concept" class="card">
+            <h2 class="text-2xl font-bold text-sky-700 mb-2 text-center">What is Half-Life?</h2>
+            <p class="text-center text-stone-600 mb-6">This is the most important concept of this lesson!</p>
+            <div class="text-center bg-white p-6 rounded-lg border-2 border-amber-400 border-dashed">
+                <p class="text-lg"><strong>Half-Life</strong> is the time it takes for <span class="text-red-600 font-bold">half</span> of the radioactive atoms in a sample to decay.</p>
+            </div>
+            
+            <h3 class="text-xl font-semibold text-center mt-8 mb-4">Let's visualize: The Popcorn Example! 🍿</h3>
+            <p class="text-center text-stone-600 mb-6">Let's say we have 64 popcorn kernels (radioactive atoms) and the half-life is 1 minute. Let's see what happens when we press the "Pass 1 Half-Life" button.</p>
+            <div class="w-full bg-amber-50 p-4 rounded-lg text-center">
+                <div id="popcorn-container" class="grid grid-cols-8 gap-2 mb-4 min-h-[100px]"></div>
+                <p class="mb-4 font-semibold">Number of unpopped kernels: <span id="popcorn-count">64</span></p>
+                <button id="next-half-life-btn" class="btn-primary">Pass 1 Half-Life</button>
+                <button id="reset-popcorn-btn" class="bg-gray-300 text-stone-800 px-4 py-2 rounded-lg ml-2">Reset</button>
+            </div>
+        </section>
+
+        <section id="simulator" class="card">
+            <h2 class="text-2xl font-bold text-sky-700 mb-2 text-center">Half-Life Simulator</h2>
+            <p class="text-center text-stone-600 mb-6">Now let's be scientists! Try entering different values to see how a radioactive substance decays using the graph below.</p>
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label for="initial-amount" class="font-medium text-sm">Initial Amount (grams)</label>
+                    <input type="number" id="initial-amount" value="100" class="w-full p-2 border border-gray-300 rounded-md mt-1">
+                </div>
+                <div>
+                    <label for="half-life-duration" class="font-medium text-sm">Half-Life (years)</label>
+                    <input type="number" id="half-life-duration" value="10" class="w-full p-2 border border-gray-300 rounded-md mt-1">
+                </div>
+                <div>
+                    <label for="total-time" class="font-medium text-sm">Total Time (years)</label>
+                    <input type="number" id="total-time" value="30" class="w-full p-2 border border-gray-300 rounded-md mt-1">
+                </div>
+            </div>
+            <div class="text-center mb-6">
+                <button id="calculate-btn" class="btn-primary">Calculate & Draw Graph</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="decayChart"></canvas>
+            </div>
+            <div id="result-text" class="text-center mt-6 p-4 bg-sky-50 rounded-lg font-semibold text-lg text-sky-800"></div>
+        </section>
+
+        <section id="real-world" class="card">
+            <h2 class="text-2xl font-bold text-sky-700 mb-4 text-center">Real-World Application: A Detective of Time 🕵️</h2>
+            <p class="text-center text-stone-600 mb-6">Scientists use half-life to determine the age of ancient objects, like fossils! They use an element called <strong>Carbon-14</strong>, which has a half-life of <strong>5,730 years</strong>. When a living thing dies, the Carbon-14 in its body starts to decay. Scientists can then measure the remaining amount to calculate its age. It's like a "radioactive clock".</p>
+        </section>
+
+        <section id="quiz" class="card">
+            <h2 class="text-2xl font-bold text-sky-700 mb-6 text-center">Test Your Understanding!</h2>
+            <div class="space-y-8">
+                <!-- Question 1 -->
+                <div>
+                    <p class="font-semibold mb-2">Question 1:</p>
+                    <p class="mb-4">We have 100 grams of an element called "Gemini-um". This element has a half-life of <strong>10 years</strong>. After <strong>30 years</strong>, how many grams of this element will be left?</p>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="quiz1-answer" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter your answer as a number">
+                        <button id="check1-btn" class="btn-primary whitespace-nowrap">Check Answer</button>
+                    </div>
+                    <p id="feedback1" class="mt-2 text-sm font-medium"></p>
+                </div>
+                <!-- Question 2 -->
+                <div>
+                    <p class="font-semibold mb-2">Question 2:</p>
+                    <p class="mb-4">An ancient rock contains a radioactive element with a half-life of <strong>2,000 years</strong>. Scientists find that only <strong>25%</strong> of the original element remains. How old is the rock?</p>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="quiz2-answer" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter your answer as a number (years)">
+                        <button id="check2-btn" class="btn-primary whitespace-nowrap">Check Answer</button>
+                    </div>
+                    <p id="feedback2" class="mt-2 text-sm font-medium"></p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-6 bg-white mt-12">
+        <p class="text-stone-500">Science Lesson for M.1 Students</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Popcorn Analogy
+            const popcornContainer = document.getElementById('popcorn-container');
+            const popcornCountSpan = document.getElementById('popcorn-count');
+            const nextBtn = document.getElementById('next-half-life-btn');
+            const resetBtn = document.getElementById('reset-popcorn-btn');
+            let currentPopcorn = 64;
+
+            function renderPopcorn() {
+                popcornContainer.innerHTML = '';
+                for (let i = 0; i < 64; i++) {
+                    const popcorn = document.createElement('div');
+                    popcorn.classList.add('w-6', 'h-6', 'rounded-full', 'flex', 'items-center', 'justify-center');
+                    if (i < currentPopcorn) {
+                        popcorn.classList.add('bg-amber-400'); // Unpopped
+                        popcorn.innerText = '🍿';
+                    } else {
+                        popcorn.classList.add('bg-yellow-200'); // Popped
+                        popcorn.innerText = '💥';
+                    }
+                    popcornContainer.appendChild(popcorn);
+                }
+                popcornCountSpan.innerText = currentPopcorn;
+            }
+
+            nextBtn.addEventListener('click', () => {
+                if (currentPopcorn > 1) {
+                    currentPopcorn /= 2;
+                    renderPopcorn();
+                }
+            });
+
+            resetBtn.addEventListener('click', () => {
+                currentPopcorn = 64;
+                renderPopcorn();
+            });
+
+            // Chart.js Simulator
+            const ctx = document.getElementById('decayChart').getContext('2d');
+            let decayChart;
+
+            function createOrUpdateChart(data, labels) {
+                if (decayChart) {
+                    decayChart.destroy();
+                }
+                decayChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Amount Remaining (grams)',
+                            data: data,
+                            borderColor: '#0077B6',
+                            backgroundColor: 'rgba(0, 119, 182, 0.1)',
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Amount (grams)' }
+                            },
+                            x: {
+                                title: { display: true, text: 'Time (years)' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function calculateDecay() {
+                const initialAmount = parseFloat(document.getElementById('initial-amount').value);
+                const halfLife = parseFloat(document.getElementById('half-life-duration').value);
+                const totalTime = parseFloat(document.getElementById('total-time').value);
+                const resultText = document.getElementById('result-text');
+
+                if (isNaN(initialAmount) || isNaN(halfLife) || isNaN(totalTime) || halfLife <= 0 || initialAmount < 0 || totalTime < 0) {
+                    resultText.innerHTML = "Please enter valid, positive numbers";
+                    createOrUpdateChart([], []);
+                    return;
+                }
+
+                const numHalfLives = totalTime / halfLife;
+                const remainingAmount = initialAmount * Math.pow(0.5, numHalfLives);
+                
+                let labels = [0];
+                let data = [initialAmount];
+                
+                for (let i = 1; i <= Math.ceil(numHalfLives) + 1; i++) {
+                    let timePoint = i * halfLife;
+                    if (timePoint > totalTime && labels[labels.length -1] < totalTime) {
+                        labels.push(totalTime);
+                        data.push(remainingAmount);
+                        break;
+                    }
+                    labels.push(timePoint);
+                    data.push(initialAmount * Math.pow(0.5, i));
+
+                     if (timePoint >= totalTime) break;
+                }
+                
+                if (labels[labels.length-1] < totalTime) {
+                    labels.push(totalTime);
+                    data.push(remainingAmount);
+                }
+
+                createOrUpdateChart(data, labels);
+                resultText.innerHTML = `After ${totalTime} years, ${remainingAmount.toFixed(2)} grams will remain. (${numHalfLives.toFixed(2)} half-lives passed)`;
+            }
+
+            document.getElementById('calculate-btn').addEventListener('click', calculateDecay);
+
+            // Quiz
+            const check1Btn = document.getElementById('check1-btn');
+            const feedback1 = document.getElementById('feedback1');
+            check1Btn.addEventListener('click', () => {
+                const answer = parseFloat(document.getElementById('quiz1-answer').value);
+                if (answer === 12.5) {
+                    feedback1.textContent = 'Correct! 👍 (100g -> 50g -> 25g -> 12.5g)';
+                    feedback1.className = 'mt-2 text-sm font-medium text-green-600';
+                } else {
+                    feedback1.textContent = 'Not quite, try calculating again. (3 half-lives have passed)';
+                    feedback1.className = 'mt-2 text-sm font-medium text-red-600';
+                }
+            });
+
+            const check2Btn = document.getElementById('check2-btn');
+            const feedback2 = document.getElementById('feedback2');
+            check2Btn.addEventListener('click', () => {
+                const answer = parseFloat(document.getElementById('quiz2-answer').value);
+                if (answer === 4000) {
+                    feedback2.textContent = 'Correct! 👏 (100% -> 50% -> 25% is 2 half-lives x 2,000 years)';
+                    feedback2.className = 'mt-2 text-sm font-medium text-green-600';
+                } else {
+                    feedback2.textContent = 'Almost there! Think about how many half-lives it takes to get to 25%.';
+                    feedback2.className = 'mt-2 text-sm font-medium text-red-600';
+                }
+            });
+            
+            // Initial render
+            renderPopcorn();
+            calculateDecay();
+        });
+    </script>
+</body>
+</html>
+
